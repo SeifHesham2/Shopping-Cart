@@ -19,7 +19,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
                     sh '''
                     $SCANNER_HOME/bin/sonar-scanner -X \
-                        -Dsonar.host.url="http://localhost:9000" \
+                        -Dsonar.host.url="localhost:9000" \
                         -Dsonar.login="$SONAR_TOKEN" \
                         -Dsonar.projectName="shoopping-cart" \
                         -Dsonar.projectKey="shoopping-cart" \
