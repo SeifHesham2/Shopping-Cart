@@ -16,15 +16,16 @@ pipeline {
 
         stage('sonarqube analysis') {
             steps {
-                sh '''
-                $SCANNER_HOME/bin/sonar-scanner \
-                    -Dsonar.host.url="http://localhost:9000" \
-                    -Dsonar.login="admin" \
-                    -Dsonar.password="koko123456" \
-                    -Dsonar.projectName="shoopping-cart" \
-                    -Dsonar.projectKey="shoopping-cart" \
-                    -Dsonar.java.binaries="."
-                '''
+                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                    sh '''
+                    $SCANNER_HOME/bin/sonar-scanner -X \
+                        -Dsonar.host.url="http://localhost:9000" \
+                        -Dsonar.login="$SONAR_TOKEN" \
+                        -Dsonar.projectName="shoopping-cart" \
+                        -Dsonar.projectKey="shoopping-cart" \
+                        -Dsonar.java.binaries="."
+                    '''
+                }
             }
         }
     }
