@@ -1,0 +1,25 @@
+pipeline {
+agent any
+environment {
+    MaveHome = tool 'myMaven'
+    JDKHome = tool 'myJdk'
+    ScannerHome = tool 'mySonar'
+    PATH = "$MaveHome/bin:$JDKHome/bin:$PATH"
+}
+
+stages {    
+
+    stage('compile') {
+        steps {
+            sh 'mvn clean compile'
+        }
+    }
+
+    stage('sonarqube analysis') { 
+        steps {
+            sh ''' $ScannerHome/bin/sonar-scanner -Dsonar.host.url="http://localhost:9000" -Dsonar.login="admin" -Dsonar.password="koko123456" -Dsonar.projectname="shoopping-cart" -Dsonar.projectKey="shoopping-cart" -Dsonar.java.binaries=." '''
+        }        
+    }
+}
+
+}
