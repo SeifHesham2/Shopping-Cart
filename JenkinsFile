@@ -1,25 +1,31 @@
 pipeline {
-agent any
-environment {
-    MaveHome = tool 'myMaven'
-    JDKHome = tool 'myJdk'
-    ScannerHome = tool 'mySonar'
-    PATH = "$MaveHome/bin:$JDKHome/bin:$PATH"
-}
+    agent any
+    environment {
+        MAVEN_HOME = tool 'myMaven'
+        JDK_HOME = tool 'myJdk'
+        SCANNER_HOME = tool 'mySonar'
+        PATH = "$MAVEN_HOME/bin:$JDK_HOME/bin:$SCANNER_HOME/bin:$PATH"
+    }
 
-stages {    
+    stages {
+        stage('compile') {
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
 
-    stage('compile') {
-        steps {
-            sh 'mvn clean compile' 
+        stage('sonarqube analysis') {
+            steps {
+                sh '''
+                $SCANNER_HOME/bin/sonar-scanner \
+                    -Dsonar.host.url="http://localhost:9000" \
+                    -Dsonar.login="admin" \
+                    -Dsonar.password="koko123456" \
+                    -Dsonar.projectName="shoopping-cart" \
+                    -Dsonar.projectKey="shoopping-cart" \
+                    -Dsonar.java.binaries="."
+                '''
+            }
         }
     }
-
-    stage('sonarqube analysis') { 
-        steps {
-            sh ''' $ScannerHome/bin/sonar-scanner -Dsonar.host.url="http://localhost:9000" -Dsonar.login="admin" -Dsonar.password="koko123456" -Dsonar.projectname="shoopping-cart" -Dsonar.projectKey="shoopping-cart" -Dsonar.java.binaries=." '''
-        }        
-    }
-}
-
 }
